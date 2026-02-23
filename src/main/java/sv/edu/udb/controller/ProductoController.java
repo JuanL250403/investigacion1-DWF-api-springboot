@@ -34,6 +34,17 @@ public class ProductoController {
         return new ResponseEntity<>(listaProductos, HttpStatus.OK);
     }
 
+    @GetMapping("/{id}")
+    private ResponseEntity<ProductoResponseDTO> buscarProductoId(@PathVariable("id") Long id){
+        ProductoResponseDTO producto = productoService.buscarProductoId(id);
+
+        if(producto == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(producto, HttpStatus.OK);
+    }
+
     @PostMapping
     private ResponseEntity<ProductoResponseDTO> agregarProducto(@RequestBody ProductoRequestDTO producto){
         ProductoResponseDTO productoCreado = productoService.agregarProducto(producto);

@@ -30,16 +30,46 @@ public class ProductoService {
 
     public List<ProductoResponseDTO> listarProductos(){
         return productoRepository.findAll().stream()
-                .map(p -> new ProductoResponseDTO(p.getNombre(), p.getMarca().getNombre(), p.getCategoria().getNombre(), p.getCantidad(), p.getPrecio()))
+                .map(p -> ProductoResponseDTO.builder()
+                        .id(p.getId())
+                        .nombre(p.getNombre())
+                        .marca(p.getMarca().getNombre())
+                        .categoria(p.getCategoria().getNombre())
+                        .cantidad(p.getCantidad())
+                        .precio(p.getPrecio())
+                        .activo(p.getActivo())
+                        .build() )
                 .collect(Collectors.toList());
+    }
+
+    public ProductoResponseDTO buscarProductoId(Long id){
+        Producto productoEncontrado = productoRepository.findById(id).orElse(null);
+
+        if(productoEncontrado == null){
+            return null;
+        }
+
+        return ProductoResponseDTO.builder()
+                .id(productoEncontrado.getId())
+                .nombre(productoEncontrado.getNombre())
+                .marca(productoEncontrado.getMarca().getNombre())
+                .categoria(productoEncontrado.getCategoria().getNombre())
+                .precio(productoEncontrado.getPrecio())
+                .cantidad(productoEncontrado.getCantidad())
+                .activo(productoEncontrado.getActivo())
+                .build();
     }
 
     @Transactional
     public ProductoResponseDTO agregarProducto(ProductoRequestDTO producto){
 
-        Categoria categoria = categoriaRepository.findById(producto.getCategoriaId()).orElseThrow();
+        Categoria categoria = categoriaRepository.findById(producto.getCategoriaId()).orElse(null);
 
-        Marca marca = marcaRepository.findById(producto.getMarcaId()).orElseThrow();
+        Marca marca = marcaRepository.findById(producto.getMarcaId()).orElse(null);
+
+        if(marca == null || categoria == null){
+            return  null;
+        }
 
         Producto productoNuevo = Producto.builder()
                 .nombre(producto.getNombre())
@@ -47,16 +77,20 @@ public class ProductoService {
                 .categoria(categoria)
                 .precio(producto.getPrecio())
                 .cantidad(producto.getCantidad())
+                .activo(true)
                 .build();
 
         Producto productoCreado = productoRepository.save(productoNuevo);
 
-        return new ProductoResponseDTO(
-                productoCreado.getNombre(),
-                productoCreado.getMarca().getNombre(),
-                productoCreado.getCategoria().getNombre(),
-                productoCreado.getCantidad(),
-                productoCreado.getPrecio());
+        return ProductoResponseDTO.builder()
+                .id(productoNuevo.getId())
+                .nombre(productoCreado.getNombre())
+                .marca(productoCreado.getMarca().getNombre())
+                .categoria(productoCreado.getCategoria().getNombre())
+                .cantidad(productoCreado.getCantidad())
+                .precio(productoCreado.getPrecio())
+                .activo(productoCreado.getActivo())
+                .build();
     }
 
     @Transactional
@@ -67,9 +101,13 @@ public class ProductoService {
             return null;
         }
 
-        Categoria categoria = categoriaRepository.findById(producto.getCategoriaId()).orElseThrow();
+        Categoria categoria = categoriaRepository.findById(producto.getCategoriaId()).orElse(null);
 
-        Marca marca = marcaRepository.findById(producto.getMarcaId()).orElseThrow();
+        Marca marca = marcaRepository.findById(producto.getMarcaId()).orElse(null);
+
+        if(marca == null || categoria == null){
+            return  null;
+        }
 
         productoActualizar.setNombre(producto.getNombre());
         productoActualizar.setMarca(marca);
@@ -79,12 +117,15 @@ public class ProductoService {
 
         Producto productoEditado =  productoRepository.save(productoActualizar);
 
-        return new ProductoResponseDTO(
-                productoEditado.getNombre(),
-                productoEditado.getMarca().getNombre(),
-                productoEditado.getCategoria().getNombre(),
-                productoEditado.getCantidad(),
-                productoEditado.getPrecio());
+        return  ProductoResponseDTO.builder()
+                .id(productoEditado.getId())
+                .nombre(productoEditado.getNombre())
+                .marca(productoEditado.getMarca().getNombre())
+                .categoria(productoEditado.getCategoria().getNombre())
+                .cantidad(productoEditado.getCantidad())
+                .precio(productoEditado.getPrecio())
+                .activo(productoEditado.getActivo())
+                .build();
     }
 
     @Transactional
@@ -94,8 +135,9 @@ public class ProductoService {
         if(productoElimiar == null){
             return false;
         }
+        productoElimiar.setActivo(false);
 
-        productoRepository.delete(productoElimiar);
+        productoRepository.save(productoElimiar);
 
         return true;
     }

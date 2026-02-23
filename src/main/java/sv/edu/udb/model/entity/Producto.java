@@ -2,6 +2,7 @@ package sv.edu.udb.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
 
@@ -36,4 +37,8 @@ public class Producto {
 
     @Column(nullable = false)
     private int cantidad;
+
+    @ColumnDefault("true")
+    @Column(nullable = false)
+    private Boolean activo;
 }
