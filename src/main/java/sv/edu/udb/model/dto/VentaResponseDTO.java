@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class VentaResponseDTO {
+    private Long id;
     private List<ProductoVentaResponseDTO> productos;
     private double subTotal;
     private double porcentajeIva;

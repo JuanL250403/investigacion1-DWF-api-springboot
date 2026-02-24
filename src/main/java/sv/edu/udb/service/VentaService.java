@@ -59,6 +59,7 @@ public class VentaService {
 
             ventaResponse.add(
                     VentaResponseDTO.builder()
+                            .id(venta.getId())
                             .productos(productosVenta)
                             .subTotal(SubTotal)
                             .porcentajeIva(porcentajeIva)
@@ -145,6 +146,7 @@ public class VentaService {
 
 
         VentaResponseDTO ventaResponse = VentaResponseDTO.builder()
+                .id(ventaCreada.getId())
                 .productos(productosResponse)
                 .subTotal(subTotalVenta)
                 .porcentajeIva(porcentajeIva)
